@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package fl.proto;
+
+enum Reason {
+    UNKNOWN = 0;
+    RECONNECT = 1;
+    POWER_DISCONNECTED = 2;
+    WIFI_UNAVAILABLE = 3;
+    ACK = 4;
+}
+
+enum Code {
+    OK = 0;
+    ERROR = 1;
+}
+
+message Status {
+    Code code = 1;
+    string message = 2;
+}
+
+message Parameters {
+    repeated bytes tensors = 1;
+    string tensor_type = 2;
+}
+
+message ClientMessage {
+    Status status = 1;
+    Parameters parameters = 2;
+
+}
+
+message ServerMessage {
+    Parameters parameters = 1;
+}
+
+service IvirseService {
+    rpc Join(stream ClientMessage) returns (stream ServerMessage);
+}
