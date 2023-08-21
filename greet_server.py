@@ -60,10 +60,16 @@ class GreeterService(greet_pb2_grpc.GreeterServicer):
                 tensor_array = struct.unpack('f' * (len(tensor_bytes) // 4), tensor_bytes)
 
                 # Process the tensor_array as needed
-                print("Received tensor array:", tensor_array[0])
+                tensor_array = [value / 2 for value in tensor_array]
+                tensor_array = [struct.pack("f" * len(tensor_array), *tensor_array)]
+                
+                new_params = greet_pb2.Parameters(
+                    tensors=tensor_array,
+                    tensor_type="ND_REPLY"
+                )
 
                 # Create a HelloReply instance with the appropriate data
-                yield greet_pb2.HelloReply(parameters=parameters)
+                yield greet_pb2.HelloReply(parameters=new_params)
         except Exception as e:
             print("STREAMMING ERROR",e)
 
