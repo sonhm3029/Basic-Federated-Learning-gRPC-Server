@@ -14,51 +14,15 @@ class GreeterStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SayHello = channel.stream_stream(
-                '/greet.Greeter/SayHello',
-                request_serializer=greet__pb2.TestRequest.SerializeToString,
-                response_deserializer=greet__pb2.TestReply.FromString,
-                )
-        self.ParrotSaysHello = channel.unary_stream(
-                '/greet.Greeter/ParrotSaysHello',
-                request_serializer=greet__pb2.HelloRequest.SerializeToString,
-                response_deserializer=greet__pb2.HelloReply.FromString,
-                )
-        self.ChattyClientSaysHello = channel.stream_unary(
-                '/greet.Greeter/ChattyClientSaysHello',
-                request_serializer=greet__pb2.HelloRequest.SerializeToString,
-                response_deserializer=greet__pb2.DelayedReply.FromString,
-                )
         self.InteractingHello = channel.stream_stream(
                 '/greet.Greeter/InteractingHello',
-                request_serializer=greet__pb2.HelloRequest.SerializeToString,
-                response_deserializer=greet__pb2.HelloReply.FromString,
+                request_serializer=greet__pb2.ClientRequest.SerializeToString,
+                response_deserializer=greet__pb2.ServerReply.FromString,
                 )
 
 
 class GreeterServicer(object):
     """Missing associated documentation comment in .proto file."""
-
-    def SayHello(self, request_iterator, context):
-        """Unary
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ParrotSaysHello(self, request, context):
-        """Server Streaming
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ChattyClientSaysHello(self, request_iterator, context):
-        """CLient Streaming
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
 
     def InteractingHello(self, request_iterator, context):
         """Both Streaming
@@ -70,25 +34,10 @@ class GreeterServicer(object):
 
 def add_GreeterServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SayHello': grpc.stream_stream_rpc_method_handler(
-                    servicer.SayHello,
-                    request_deserializer=greet__pb2.TestRequest.FromString,
-                    response_serializer=greet__pb2.TestReply.SerializeToString,
-            ),
-            'ParrotSaysHello': grpc.unary_stream_rpc_method_handler(
-                    servicer.ParrotSaysHello,
-                    request_deserializer=greet__pb2.HelloRequest.FromString,
-                    response_serializer=greet__pb2.HelloReply.SerializeToString,
-            ),
-            'ChattyClientSaysHello': grpc.stream_unary_rpc_method_handler(
-                    servicer.ChattyClientSaysHello,
-                    request_deserializer=greet__pb2.HelloRequest.FromString,
-                    response_serializer=greet__pb2.DelayedReply.SerializeToString,
-            ),
             'InteractingHello': grpc.stream_stream_rpc_method_handler(
                     servicer.InteractingHello,
-                    request_deserializer=greet__pb2.HelloRequest.FromString,
-                    response_serializer=greet__pb2.HelloReply.SerializeToString,
+                    request_deserializer=greet__pb2.ClientRequest.FromString,
+                    response_serializer=greet__pb2.ServerReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -99,57 +48,6 @@ def add_GreeterServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Greeter(object):
     """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def SayHello(request_iterator,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/greet.Greeter/SayHello',
-            greet__pb2.TestRequest.SerializeToString,
-            greet__pb2.TestReply.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def ParrotSaysHello(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/greet.Greeter/ParrotSaysHello',
-            greet__pb2.HelloRequest.SerializeToString,
-            greet__pb2.HelloReply.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def ChattyClientSaysHello(request_iterator,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/greet.Greeter/ChattyClientSaysHello',
-            greet__pb2.HelloRequest.SerializeToString,
-            greet__pb2.DelayedReply.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def InteractingHello(request_iterator,
@@ -163,7 +61,7 @@ class Greeter(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/greet.Greeter/InteractingHello',
-            greet__pb2.HelloRequest.SerializeToString,
-            greet__pb2.HelloReply.FromString,
+            greet__pb2.ClientRequest.SerializeToString,
+            greet__pb2.ServerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
