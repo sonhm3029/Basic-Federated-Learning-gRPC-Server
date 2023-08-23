@@ -5,7 +5,7 @@ from ivirse.server.client_manager import ClientManager
 
 
 from logging import WARNING
-from typing import Tuple
+from typing import Tuple, Optional
 
 WARNING_MIN_AVAILABLE_CLIENTS_TOO_LOW = """
 Setting `min_available_clients` lower than `min_fit_clients` or
@@ -23,6 +23,7 @@ class FedAvg(Strategy):
         faction_fit: float = 1.0,
         min_fit_clients: int = 2,
         min_available_clients: int = 2,
+        initial_parameters: Optional[Parameters] = None,
     ) -> None:
         """Federated Averaging Stategy.
 
@@ -43,6 +44,7 @@ class FedAvg(Strategy):
         self.fraction_fit = faction_fit
         self.min_fit_clients = min_fit_clients
         self.min_available_clients = min_available_clients
+        self.initial_parameters = initial_parameters
         
     def num_fit_clients(self, num_available_clients: int) -> Tuple[int, int]:
         """
@@ -66,5 +68,13 @@ class FedAvg(Strategy):
         )
         
         return [(client, fit_ins) for client in clients]
+    
+    def initialize_parameters(
+        self, client_manager: ClientManager
+    ) -> Optional[Parameters]:
+        """Initialize global model parameters."""
+        initial_parameters = self.initial_parameters
+        self.initial_parameters = None
+        return initial_parameters
     
     

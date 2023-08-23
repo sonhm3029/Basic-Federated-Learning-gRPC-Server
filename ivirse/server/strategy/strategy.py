@@ -8,6 +8,23 @@ from ivirse.common.typing import Parameters
 class Strategy(ABC):
     """Abstract base class for server strategy implementations"""
         
+    
+    @abstractmethod
+    def initialize_parameters(
+        self, client_manager: ClientManager
+    ) -> Optional[Parameters]:
+        """Initialize the (global) model parameters
+
+        Args:
+            client_manager (ClientManager):
+                The client manager which holds all currently connected clients
+
+        Returns:
+            Optional[Parameters]:
+                If parameters are returned, then the server will treat these
+                as the initial global model parameters
+        """
+        
     @abstractmethod
     def configure_fit(
         self, sever_round: int, parameters: Parameters, client_manager: ClientManager

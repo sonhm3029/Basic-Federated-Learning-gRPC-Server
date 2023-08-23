@@ -85,10 +85,19 @@ class Server:
         
         
         
-    def _get_initial_parameters(self, timeout: Optional[float]):
+    def _get_initial_parameters(self, timeout: Optional[float]) -> Parameters:
         """Get initial parameters from model save in server"""
-        # parameters = np.random.rand(1280)
-        # return Parameters(tensors=,tensor_type="nd.array")
+        
+        # Serverside parameters initialization
+        parameters: Optional[Parameters] = self.strategy.initialize_parameters(
+            client_manager=self._client_manager
+        )
+        print(parameters, "PARAMS")
+        if parameters is not None:
+            log(INFO, "Using initial parameters provided by strategy")
+            return parameters
+        
+        
         log(INFO, "Requesting initial parameters from one random client")
         random_client = self._client_manager.sample(1)[0]
         parameters = random_client.get_parameters(timeout=timeout)
