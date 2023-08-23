@@ -2,10 +2,10 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import fl_pb2 as fl__pb2
+import transport_pb2 as transport__pb2
 
 
-class IvirseServiceStub(object):
+class TransportStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -15,37 +15,38 @@ class IvirseServiceStub(object):
             channel: A grpc.Channel.
         """
         self.Join = channel.stream_stream(
-                '/fl.proto.IvirseService/Join',
-                request_serializer=fl__pb2.ClientMessage.SerializeToString,
-                response_deserializer=fl__pb2.ServerMessage.FromString,
+                '/transport.Transport/Join',
+                request_serializer=transport__pb2.ClientRequest.SerializeToString,
+                response_deserializer=transport__pb2.ServerReply.FromString,
                 )
 
 
-class IvirseServiceServicer(object):
+class TransportServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def Join(self, request_iterator, context):
-        """Missing associated documentation comment in .proto file."""
+        """Both Streaming
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_IvirseServiceServicer_to_server(servicer, server):
+def add_TransportServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Join': grpc.stream_stream_rpc_method_handler(
                     servicer.Join,
-                    request_deserializer=fl__pb2.ClientMessage.FromString,
-                    response_serializer=fl__pb2.ServerMessage.SerializeToString,
+                    request_deserializer=transport__pb2.ClientRequest.FromString,
+                    response_serializer=transport__pb2.ServerReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'fl.proto.IvirseService', rpc_method_handlers)
+            'transport.Transport', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class IvirseService(object):
+class Transport(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -59,8 +60,8 @@ class IvirseService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/fl.proto.IvirseService/Join',
-            fl__pb2.ClientMessage.SerializeToString,
-            fl__pb2.ServerMessage.FromString,
+        return grpc.experimental.stream_stream(request_iterator, target, '/transport.Transport/Join',
+            transport__pb2.ClientRequest.SerializeToString,
+            transport__pb2.ServerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

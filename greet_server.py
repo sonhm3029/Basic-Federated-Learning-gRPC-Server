@@ -6,7 +6,6 @@ import grpc
 import greet_pb2
 import greet_pb2_grpc
 
-from ivirse.common.parameter import parameters_to_ndarrays, ndarrays_to_parameters
 from ivirse.common.typing import Parameters
 import struct
 
@@ -20,6 +19,7 @@ class GreeterService(greet_pb2_grpc.GreeterServicer):
         self.lock = threading.Lock()
         self.condition = threading.Condition(self.lock)
         self.message = "Waiting for more clients..."
+        self.params = []
         
             
     def InteractingHello(self, request_iterator, context):
@@ -46,7 +46,7 @@ class GreeterService(greet_pb2_grpc.GreeterServicer):
         #     print(request_iterator)
         #     for request in request_iterator:
         #         print("InteractingHello Request Made:")
-        #         parameters = request.parameters
+        #         parameters = request.parameters/
         #         # Convert the received tensor bytes to a NumPy array
         #         print(len(parameters.tensors))
         #         tensor_bytes = parameters.tensors[0]  # Assuming only one tensor
