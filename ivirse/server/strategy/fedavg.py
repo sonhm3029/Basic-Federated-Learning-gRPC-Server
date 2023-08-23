@@ -1,11 +1,12 @@
+from ivirse.server.client_proxy import ClientProxy
 from .strategy import Strategy
 from ivirse.common.logger import log
-from ivirse.common.typing import Parameters, FitIns
+from ivirse.common.typing import FitRes, Parameters, FitIns
 from ivirse.server.client_manager import ClientManager
-
+from ivirse.common.parameter import parameters_to_ndarrays
 
 from logging import WARNING
-from typing import Tuple, Optional
+from typing import List, Tuple, Optional, Union
 
 WARNING_MIN_AVAILABLE_CLIENTS_TOO_LOW = """
 Setting `min_available_clients` lower than `min_fit_clients` or
@@ -24,6 +25,7 @@ class FedAvg(Strategy):
         min_fit_clients: int = 2,
         min_available_clients: int = 2,
         initial_parameters: Optional[Parameters] = None,
+        accept_failures: bool = True,
     ) -> None:
         """Federated Averaging Stategy.
 
@@ -45,6 +47,7 @@ class FedAvg(Strategy):
         self.min_fit_clients = min_fit_clients
         self.min_available_clients = min_available_clients
         self.initial_parameters = initial_parameters
+        self.accept_failures = accept_failures
         
     def num_fit_clients(self, num_available_clients: int) -> Tuple[int, int]:
         """
@@ -77,4 +80,23 @@ class FedAvg(Strategy):
         self.initial_parameters = None
         return initial_parameters
     
-    
+    def aggregate_fit(
+        self,
+        server_round: int,
+        results: List[Tuple[ClientProxy, FitRes]],
+        failures: List[Tuple[ClientProxy, FitRes] | BaseException]
+    ) -> Parameters | None:
+        """Aggregate fir results using weighted average."""
+        if not results:
+            return None
+        
+        # Do not aggregate if there are failures and failures are not accepted
+        if not self.accept_failures and failures:
+            return None
+        
+        weights_results = [
+            (parameters_to_ndarrays(fit_res.parameters))
+            for _, fit_res in results
+        ]
+        
+        

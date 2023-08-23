@@ -3,6 +3,7 @@ from ivirse.server.grpc_server.grpc_bridge import GrpcBridge
 from ivirse.server.grpc_server.grpc_bridge import ResWrapper, InsWrapper
 from ivirse.common import FitRes, FitIns
 from ivirse.common import serde
+from ivirse.common.parameter import parameters_to_ndarrays, ndarrays_to_parameters
 
 from ivirse.proto.transport_pb2 import ServerReply, ClientRequest
 
@@ -32,7 +33,14 @@ class GrpcClientProxy(ClientProxy):
         
         client_msg: ClientRequest = res_wrapper.client_message
         
-        print(client_msg, "CLIENT_MSG")
+        
+        print(client_msg.parameters)
+        parameters = serde.parameters_from_proto(client_msg.parameters)
+        # print(parameters)
+        parameters = parameters_to_ndarrays(parameters)
+        bytes_arr = ndarrays_to_parameters(parameters)
+        
+        print(bytes_arr, "CLIENT MSG")
         
         return []
         
