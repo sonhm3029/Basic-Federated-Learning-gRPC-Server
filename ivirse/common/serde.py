@@ -27,3 +27,5 @@ def parameters_from_proto(msg: Parameters) -> typing.Parameters:
     
     return typing.Parameters(tensors=tensors, tensor_type=msg.tensor_type)
 
+# def fit_res_from_proto(msg: )
+

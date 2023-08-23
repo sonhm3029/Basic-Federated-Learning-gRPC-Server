@@ -39,6 +39,7 @@ class FitIns:
 class FitRes:
     """Fit response from a client."""
     parameters: Parameters
+    status: Status
 
 
 @dataclass
