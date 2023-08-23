@@ -4,10 +4,8 @@ from dataclasses import dataclass
 import threading
 import random
 
+from ivirse.server.client_proxy import ClientProxy
 
-@dataclass
-class ClientProxy:
-    cid: int
 
 
 class ClientManager(ABC):
@@ -61,13 +59,14 @@ class ClientManager(ABC):
             Sample a number of ClientProxy instances.
         """
         
+        
 class SimpleClientManager(ClientManager):
     """Provides a pool of available clients."""
     
     def __init__(self) -> None:
         self.clients: Dict[str, ClientProxy] = {}
         self._cv = threading.Condition()
-        
+         
     def __len__(self) -> int:
         return len(self.clients)
     
@@ -129,6 +128,10 @@ class SimpleClientManager(ClientManager):
         Returns:
             bool: success
         """
+        with self._cv:
+            return self._cv.wait_for(
+                lambda: len(self.clients) >= num_clients, timeout=timeout
+            )
         
     def sample(
         self,

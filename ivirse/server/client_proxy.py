@@ -3,6 +3,8 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from ivirse.common.typing import FitIns, FitRes
+
 
 class BatteryStatus(Enum):
     PLUG: bool
@@ -20,12 +22,13 @@ class ClientProxy(ABC):
         
     
     @abstractmethod
-    def get_parameters(self):
+    def get_parameters(self, timeout: Optional[float]):
         """Return current local model parameters"""
 
     @abstractmethod
     def fit(
         self,
+        ins: FitIns,
         timeout: Optional[float]
-    ):
+    ) -> FitRes:
         """Refine the provided parameters using locally held dataset."""

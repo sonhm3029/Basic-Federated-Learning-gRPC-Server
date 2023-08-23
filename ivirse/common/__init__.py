@@ -8,6 +8,8 @@ from .typing import GetParametersIns
 from .typing import GetParametersRes
 from .typing import ReconnectIns
 from .typing import DisconnectRes
+from .typing import FitIns
+from .typing import FitRes
 
 __all__ = [
     "Parameters",
@@ -19,5 +21,7 @@ __all__ = [
     "GetParametersIns",
     "GetParametersRes",
     "ReconnectIns",
-    "DisconnectRes"
+    "DisconnectRes",
+    "FitIns",
+    "FitRes"
 ]

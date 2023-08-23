@@ -9,6 +9,8 @@ import sys
 from ivirse.common.parameter import ndarrays_to_parameters, parameters_to_ndarrays
 from ivirse.common.typing import Parameters                                 
 
+from ivirse.proto import transport_pb2, transport_pb2_grpc
+
 def write_bytes_list_to_file(bytes_list, filename):
     with open(filename, "wb") as f:
         for item in bytes_list:
@@ -34,28 +36,21 @@ def get_client_stream_requests():
         print(f"Request size : {request_size_bytes} KB")
         yield hello_request
 
-
-class Client:
-    def checkReady():
-        pass
-    def train():
-        pass
-
 def run():
-    client = Client()
-    with grpc.insecure_channel('172.28.240.1:50051') as channel:
-        stub = greet_pb2_grpc.GreeterStub(channel)
+
+    with grpc.insecure_channel('localhost:50051') as channel:
+        stub= transport_pb2_grpc.TransportStub(channel)
 
         
-        responses = stub.InteractingHello(get_client_stream_requests())
+        responses = stub.Join(get_client_stream_requests())
         for response in responses:
             print("InteractingHello Response Received: ")
             end = time.time()
             print("Received time: ", end)
-            parameters = parameters_to_ndarrays(
-                Parameters(tensors=response.parameters.tensors,
-                           tensor_type=response.parameters.tensor_type)
-            )
+            # parameters = parameters_to_ndarrays(
+            #     Parameters(tensors=response.parameters.tensors,
+            #                tensor_type=response.parameters.tensor_type)
+            # )
             
                 
         

@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import transport_pb2 as transport__pb2
+import ivirse.proto.transport_pb2 as transport__pb2
 
 
 class TransportStub(object):

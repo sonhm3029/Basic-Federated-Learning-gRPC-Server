@@ -3,12 +3,12 @@ from ivirse.server.history import History
 from ivirse.common.logger import log
 from ivirse.server.strategy import Strategy, FedAvg
 from ivirse.server.client_proxy import ClientProxy
-from ivirse.common.typing import Code
+from ivirse.common.typing import Code, FitIns, FitRes, Parameters
 
 from logging import DEBUG, INFO
 import timeit
 
-from typing import Optional, List
+from typing import Optional, List, Tuple, Union
 import numpy as np
 import concurrent.futures
 
@@ -68,23 +68,50 @@ class Server:
             self._client_manager.num_available()
         )
         
+        # Collect `fit` results from all clients participating in this round
+        results, failures = fit_clients(
+            client_instructions=client_instructions,
+            max_workers=self.max_workers,
+            timeout=timeout
+        )
+        
+        log(
+            DEBUG,
+            "fit_round %s received %s results and %s failures",
+            server_round,
+            len(results),
+            len(failures)
+        )
+        
         
         
     def _get_initial_parameters(self, timeout: Optional[float]):
         """Get initial parameters from model save in server"""
-        parameters = np.random.rand(1280)
+        # parameters = np.random.rand(1280)
+        # return Parameters(tensors=,tensor_type="nd.array")
+        log(INFO, "Requesting initial parameters from one random client")
+        random_client = self._client_manager.sample(1)[0]
+        parameters = random_client.get_parameters(timeout=timeout)
+        
         return parameters
+        
+    
+    # def disconnect_all_clients(self, timeout: Optional[float]) -> None:
+    #     """Send shutdown signal to all clients."""
+    #     all_clients = self._client_manager.all()
+    #     clients = [all_clients[k] for k in all_clients.keys()]
+    #     instruction = Re
     
 def fit_clients(
-    client_instructions,
+    client_instructions: List[Tuple[ClientProxy, FitIns]],
     max_workers: Optional[int],
     timeout: Optional[float]
 ):
     """Refine parameters concurrently on all selected clients."""
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         submitted_fs = {
-            executor.submit(fit_client, client_proxy, timeout)
-            for client_proxy in client_instructions
+            executor.submit(fit_client, client_proxy, ins, timeout)
+            for client_proxy, ins in client_instructions
         }
         
         finished_fs, _ =  concurrent.futures.wait(
@@ -93,25 +120,30 @@ def fit_clients(
         )
         
         # Gather results
-    results: List[ClientProxy] = []
+    results: List[Tuple[ClientProxy, FitRes]] = []
+    failures: List[Union[Tuple[ClientProxy, FitRes], BaseException]] = []
     for future in finished_fs:
         _handle_finished_future_after_fit(
-            future=future, results=results
+            future=future, results=results, failures=failures
         )
             
-    return results
+    return results, failures
             
 def _handle_finished_future_after_fit(
     future: concurrent.futures.Future,
-    results: List[ClientProxy]
+    results: List[Tuple[ClientProxy, FitRes]],
+    failures: List[Union[Tuple[ClientProxy, FitRes], BaseException]]
 ) -> None:
     """Convert finished future into either a result or a failure"""
 
     # Check if there was an exception
-    
+    failure = future.exception()
+    if failure is not None:
+        failures.append(failure)
+        return
     
     # Successfully received a result from a client
-    result: ClientProxy = future.result()
+    result: Tuple[ClientProxy, FitRes] = future.result()
     _, res = result
     
     # check if result status code
@@ -119,10 +151,14 @@ def _handle_finished_future_after_fit(
         results.append(result)
         return
     
+    # Not successful, client returned a result where the status code is not OK
+    failures.append(result)
+    
 def fit_client(
     client: ClientProxy,
+    ins: FitIns,
     timeout: Optional[float]
-):
+) -> Tuple[ClientProxy, FitRes]:
     "Refine parameters on a single client."
-    fit_res = client.fit(timeout = timeout)
+    fit_res = client.fit(ins, timeout = timeout)
     return client, fit_res

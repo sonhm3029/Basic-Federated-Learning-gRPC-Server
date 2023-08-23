@@ -1,6 +1,6 @@
 from .strategy import Strategy
 from ivirse.common.logger import log
-from ivirse.common.typing import Parameters
+from ivirse.common.typing import Parameters, FitIns
 from ivirse.server.client_manager import ClientManager
 
 
@@ -54,6 +54,9 @@ class FedAvg(Strategy):
     def configure_fit(
         self, server_round: int, parameters: Parameters, client_manager: ClientManager
     ):
+        
+        fit_ins = FitIns(parameters)
+        
         sample_size, min_num_clients = self.num_fit_clients(
             client_manager.num_available()
         )
@@ -62,6 +65,6 @@ class FedAvg(Strategy):
             num_clients=sample_size, min_num_clients=min_num_clients
         )
         
-        return clients
+        return [(client, fit_ins) for client in clients]
     
     

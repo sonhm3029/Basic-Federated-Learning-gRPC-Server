@@ -28,6 +28,29 @@ class Status:
     code: Code
     message: str
     
+    
+@dataclass
+class FitIns:
+    """Fit instructions for a client."""
+    
+    parameters: Parameters   
+
+@dataclass
+class FitRes:
+    """Fit response from a client."""
+    parameters: Parameters
+
+
+@dataclass
+class ServerReply:
+    """ServerReply is a container used to hold one instruction message."""
+    parameters: Optional[Parameters] = None
+    
+
+@dataclass
+class ClientRequest:
+    """ClientRequest is a container used to hold one result message."""
+    parameters: Optional[Parameters] = None
 @dataclass
 class GetPropertiesIns:
     """Properties request for a client."""
