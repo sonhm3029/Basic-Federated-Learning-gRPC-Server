@@ -22,7 +22,6 @@ class GrpcClientProxy(ClientProxy):
         
     def get_parameters(self, timeout: Optional[float]):
         """Return the current local model parameters."""
-        print("THERS")
                 
         res_wrapper: ResWrapper = self.bridge.request(
             ins_wrapper=InsWrapper(
@@ -33,16 +32,9 @@ class GrpcClientProxy(ClientProxy):
         
         client_msg: ClientRequest = res_wrapper.client_message
         
-        
-        print(client_msg.parameters)
         parameters = serde.parameters_from_proto(client_msg.parameters)
-        # print(parameters)
-        parameters = parameters_to_ndarrays(parameters)
-        bytes_arr = ndarrays_to_parameters(parameters)
-        
-        print(bytes_arr, "CLIENT MSG")
-        
-        return []
+                
+        return parameters
         
     
     def fit(self,ins: FitIns,  timeout: Optional[float]):

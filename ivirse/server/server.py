@@ -37,7 +37,7 @@ class Server:
         self.parameters = self._get_initial_parameters(timeout=timeout)
         
         # Training
-        log(INFO, "Start training")
+        log(INFO, "FL starting!")
         start_time = timeit.default_timer() 
         
         for current_round in range(1, num_rounds + 1):
@@ -101,6 +101,7 @@ class Server:
         log(INFO, "Requesting initial parameters from one random client")
         random_client = self._client_manager.sample(1)[0]
         parameters = random_client.get_parameters(timeout=timeout)
+        log(INFO, "Received initial parameters from one random client")
         
         return parameters
         
