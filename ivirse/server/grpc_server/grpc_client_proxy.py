@@ -50,9 +50,7 @@ class GrpcClientProxy(ClientProxy):
                 timeout=timeout
             )
         )
-        client_msg: ClientRequest = res_wrapper.client_message
-        print(f"OK client {self.cid}")
-        
+        client_msg: ClientRequest = res_wrapper.client_message        
         return FitRes(
             parameters=serde.parameters_to_proto(client_msg.parameters),
             status=Status(

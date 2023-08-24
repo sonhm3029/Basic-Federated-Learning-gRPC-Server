@@ -3,7 +3,8 @@ from .strategy import Strategy
 from ivirse.common.logger import log
 from ivirse.common.typing import FitRes, Parameters, FitIns
 from ivirse.server.client_manager import ClientManager
-from ivirse.common.parameter import parameters_to_ndarrays
+from ivirse.common.parameter import parameters_to_ndarrays, ndarrays_to_parameters
+from ivirse.server.strategy.aggregate import aggregate
 
 from logging import WARNING
 from typing import List, Tuple, Optional, Union
@@ -98,6 +99,8 @@ class FedAvg(Strategy):
             (parameters_to_ndarrays(fit_res.parameters))
             for _, fit_res in results
         ]
+        
+        parameters_aggregated = ndarrays_to_parameters(aggregate(weights_results))
         
         
         

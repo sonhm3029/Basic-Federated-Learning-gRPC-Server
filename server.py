@@ -1,8 +1,8 @@
 from ivirse.server.app import start_server
-from ivirse.server.strategy import FedAvg
+from ivirse.server.strategy import FedMedian
 import ivirse
 
-strategy = FedAvg(
+strategy = FedMedian(
     faction_fit=1.0,
     min_fit_clients=2,
     min_available_clients=2

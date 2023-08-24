@@ -4,6 +4,7 @@ from ivirse.common.logger import log
 from ivirse.server.strategy import Strategy, FedAvg
 from ivirse.server.client_proxy import ClientProxy
 from ivirse.common.typing import Code, FitIns, FitRes, Parameters
+from ivirse.common.parameter import parameters_to_ndarrays
 
 from logging import DEBUG, INFO
 import timeit
@@ -11,6 +12,12 @@ import timeit
 from typing import Optional, List, Tuple, Union
 import numpy as np
 import concurrent.futures
+
+
+FitResultsAndFailures = Tuple[
+    List[Tuple[ClientProxy, FitRes]],
+    List[Union[Tuple[ClientProxy, FitRes], BaseException]],
+]
 
 class Server:
     """Ivirse server."""
@@ -47,7 +54,7 @@ class Server:
         self,
         server_round: int,
         timeout: Optional[float]
-    ):
+    ) -> Optional[Tuple[Parameters, FitResultsAndFailures]]:
         """Perform a single round of federated averaging"""
         
         # Get clients and their respective instructions
@@ -82,6 +89,15 @@ class Server:
             len(results),
             len(failures)
         )
+        
+        # Aggregate training results
+        parameters_aggregated: Optional[Parameters] = self.strategy.aggregate_fit(
+            server_round=server_round,
+            results=results,
+            failures=failures
+        )
+        
+        return parameters_aggregated, (results, failures)
         
         
         

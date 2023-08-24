@@ -42,6 +42,6 @@ def bytes_to_ndarray_v2(tensor_bytes: bytes) -> NDArray:
 def ndarray_to_bytes_v2(tensor_array: NDArray) -> bytes:
     """Serialize Numpy ndarray to bytes."""
     tensor_array = tensor_array.tolist()
-    tensor_array = [struct.pack("f" * len(tensor_array), *tensor_array)]
+    tensor_array = struct.pack("f" * len(tensor_array), *tensor_array)
     
     return tensor_array
