@@ -49,6 +49,15 @@ class Server:
         
         for current_round in range(1, num_rounds + 1):
             res_fit = self.fit_round(server_round=current_round, timeout=timeout)
+            if res_fit:
+                parameters_prime, _ = res_fit
+                if parameters_prime:
+                    self.parameters = parameters_prime        
+        # Bookkeeping
+        end_time = timeit.default_timer()
+        elapsed = end_time - start_time
+        log(INFO, "FL finished in %s", elapsed)
+        return history
     
     def fit_round(
         self,
