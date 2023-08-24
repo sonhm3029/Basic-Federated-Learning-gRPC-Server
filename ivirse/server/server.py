@@ -56,7 +56,7 @@ class Server:
             parameters=self.parameters,
             client_manager=self._client_manager
         )
-        
+                
         if not client_instructions:
             log(INFO, "Fit round %s: no clients selected, cancel", server_round)
             return None
@@ -100,7 +100,7 @@ class Server:
         log(INFO, "Requesting initial parameters from one random client")
         random_client = self._client_manager.sample(1)[0]
         parameters = random_client.get_parameters(timeout=timeout)
-        log(INFO, "Received initial parameters from one random client")
+        log(INFO, f"Received initial parameters from client: {random_client.cid}")
         
         return parameters
         

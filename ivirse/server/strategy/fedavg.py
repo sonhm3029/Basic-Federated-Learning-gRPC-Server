@@ -60,7 +60,7 @@ class FedAvg(Strategy):
         self, server_round: int, parameters: Parameters, client_manager: ClientManager
     ):
         
-        fit_ins = FitIns(parameters)
+        fit_ins = FitIns(parameters=parameters)
         
         sample_size, min_num_clients = self.num_fit_clients(
             client_manager.num_available()

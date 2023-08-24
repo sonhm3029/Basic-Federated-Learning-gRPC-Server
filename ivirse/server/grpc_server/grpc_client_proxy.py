@@ -27,7 +27,7 @@ class GrpcClientProxy(ClientProxy):
                 
         res_wrapper: ResWrapper = self.bridge.request(
             ins_wrapper=InsWrapper(
-                server_message=ServerReply(),
+                server_message=ServerReply(message="Request parameters"),
                 timeout=timeout
             )
         )
@@ -44,15 +44,14 @@ class GrpcClientProxy(ClientProxy):
 
         parameters = serde.parameters_to_proto(ins.parameters)
         
-        print("REQUEST")
         res_wrapper: ResWrapper = self.bridge.request(
             ins_wrapper=InsWrapper(
                 server_message=ServerReply(parameters = parameters),
                 timeout=timeout
             )
         )
-        print("RESPONSE", self.cid)
         client_msg: ClientRequest = res_wrapper.client_message
+        print(f"OK client {self.cid}")
         
         return FitRes(
             parameters=serde.parameters_to_proto(client_msg.parameters),

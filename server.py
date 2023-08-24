@@ -1,6 +1,6 @@
 from ivirse.server.app import start_server
 from ivirse.server.strategy import FedAvg
-
+import ivirse
 
 strategy = FedAvg(
     faction_fit=1.0,
@@ -10,5 +10,6 @@ strategy = FedAvg(
 
 start_server(
     server_address="0.0.0.0:50051",
-    strategy= strategy
+    strategy= strategy,
+    config=ivirse.server.ServerConfig(num_rounds=4)
 )
